@@ -539,14 +539,14 @@ class WifiControlPopup(QWidget):
 
     def _build_ui(self) -> None:
         root = QVBoxLayout(self)
-        root.setContentsMargins(16, 16, 16, 16)
+        root.setContentsMargins(0, 0, 0, 0)
 
         self.panel = QFrame()
         self.panel.setObjectName("panel")
         root.addWidget(self.panel)
 
         layout = QVBoxLayout(self.panel)
-        layout.setContentsMargins(22, 22, 22, 22)
+        layout.setContentsMargins(16, 16, 16, 16)
         layout.setSpacing(16)
 
         head = QHBoxLayout()
@@ -626,38 +626,71 @@ class WifiControlPopup(QWidget):
         self.password_frame = QFrame()
         self.password_frame.setObjectName("passwordFrame")
         password_layout = QVBoxLayout(self.password_frame)
-        password_layout.setContentsMargins(14, 14, 14, 14)
-        password_layout.setSpacing(10)
-        selection_kicker = QLabel("Selected access point")
+        password_layout.setContentsMargins(16, 16, 16, 16)
+        password_layout.setSpacing(8)
+
+        kicker_row = QHBoxLayout()
+        kicker_row.setSpacing(6)
+        kicker_row.setContentsMargins(0, 0, 0, 0)
+        kicker_row.addWidget(QLabel(""))
+        selection_kicker = QLabel("SECURED NETWORK")
         selection_kicker.setObjectName("sectionKicker")
         selection_kicker.setFont(QFont(self.ui_font, 9, QFont.Weight.DemiBold))
+        kicker_row.addWidget(selection_kicker)
+        kicker_row.addStretch(1)
+        password_layout.addLayout(kicker_row)
+
+        title_row = QHBoxLayout()
+        title_row.setSpacing(6)
+        title_row.setContentsMargins(0, 0, 0, 0)
+        title_row.addWidget(QLabel(""))
         self.selection_label = QLabel("Select a network")
         self.selection_label.setObjectName("selectionLabel")
         self.selection_label.setWordWrap(True)
-        self.selection_label.setFont(QFont(self.ui_font, 11, QFont.Weight.DemiBold))
-        self.selection_hint = QLabel("Choose a Wi-Fi network below. Password is only needed for secured SSIDs.")
+        self.selection_label.setSizePolicy(QSizePolicy.Policy.Expanding, QSizePolicy.Policy.Minimum)
+        self.selection_label.setFont(QFont(self.ui_font, 13, QFont.Weight.DemiBold))
+        title_row.addWidget(self.selection_label)
+        title_row.addStretch(1)
+        password_layout.addLayout(title_row)
+
+        hint_row = QHBoxLayout()
+        hint_row.setSpacing(6)
+        hint_row.setContentsMargins(0, 0, 0, 0)
+        hint_row.addWidget(QLabel(""))
+        self.selection_hint = QLabel("Enter the password to connect if this network is not saved yet.")
         self.selection_hint.setObjectName("selectionHint")
         self.selection_hint.setWordWrap(True)
-        self.selection_hint.setFont(QFont(self.ui_font, 8))
+        self.selection_hint.setSizePolicy(QSizePolicy.Policy.Expanding, QSizePolicy.Policy.MinimumExpanding)
+        self.selection_hint.setFont(QFont(self.ui_font, 10))
+        hint_row.addWidget(self.selection_hint)
+        hint_row.addStretch(1)
+        password_layout.addLayout(hint_row)
+
         self.password_edit = QLineEdit()
         self.password_edit.setObjectName("passwordEdit")
-        self.password_edit.setPlaceholderText("Password if required")
+        self.password_edit.setPlaceholderText("Password...")
         self.password_edit.setEchoMode(QLineEdit.EchoMode.Password)
+        self.password_edit.setFixedHeight(44)
+        self.password_edit.setFont(QFont(self.ui_font, 12))
         self.password_edit.hide()
-        actions = QHBoxLayout()
-        actions.setSpacing(8)
+        password_layout.addWidget(self.password_edit)
+
+        button_row = QHBoxLayout()
+        button_row.setSpacing(12)
+        button_row.setContentsMargins(0, 0, 0, 0)
+        button_row.addWidget(QLabel(""))
         self.connect_button = QPushButton("Connect")
         self.connect_button.setObjectName("primaryButton")
         self.connect_button.setCursor(QCursor(Qt.CursorShape.PointingHandCursor))
-        self.connect_button.setMinimumHeight(36)
+        self.connect_button.setFixedHeight(44)
+        self.connect_button.setFont(QFont(self.ui_font, 12, QFont.Weight.DemiBold))
         self.connect_button.clicked.connect(self.connect_selected)
-        actions.addWidget(self.connect_button)
-        password_layout.addWidget(selection_kicker)
-        password_layout.addWidget(self.selection_label)
-        password_layout.addWidget(self.selection_hint)
-        password_layout.addWidget(self.password_edit)
-        password_layout.addLayout(actions)
+        button_row.addWidget(self.connect_button)
+        button_row.addStretch(1)
+        password_layout.addLayout(button_row)
+
         layout.addWidget(self.password_frame)
+        layout.insertSpacing(2, 12)
 
         self.status_label = QLabel("Scanning available networks…")
         self.status_label.setObjectName("statusLabel")
@@ -692,7 +725,7 @@ class WifiControlPopup(QWidget):
             }}
             QFrame#panel {{
                 background: {rgba(theme.surface_container, 0.94)};
-                border: 1px solid {rgba(theme.outline, 0.20)};
+                border: none;
                 border-radius: 24px;
             }}
             QLabel#kickerLabel, QLabel#sectionKicker {{
@@ -724,16 +757,23 @@ class WifiControlPopup(QWidget):
                 font-family: "{self.material_font}";
             }}
             QFrame#passwordFrame {{
-                background: {rgba(theme.surface_container_high, 0.82)};
-                border: 1px solid {rgba(theme.outline, 0.16)};
-                border-radius: 18px;
+                background: {rgba(theme.surface_container_high, 0.88)};
+                border: none;
+                border-radius: 20px;
+                min-height: 180px;
+            }}
+            QLabel#sectionKicker {{
+                color: {theme.text_muted};
+                letter-spacing: 1px;
             }}
             QLabel#selectionLabel {{
                 color: {theme.text};
+                font-size: 14px;
             }}
             QLabel#selectionHint {{
                 color: {theme.text_muted};
-                line-height: 1.35em;
+                line-height: 1.4em;
+                font-size: 11px;
             }}
             QLabel#statusLabel {{
                 color: {theme.text_muted};
@@ -741,26 +781,27 @@ class WifiControlPopup(QWidget):
                 line-height: 1.35em;
             }}
             QLineEdit#passwordEdit {{
-                background: {rgba(theme.surface_container, 0.76)};
-                border: 1px solid {rgba(theme.outline, 0.16)};
-                border-radius: 999px;
+                background: {rgba(theme.surface_container, 0.78)};
+                border: none;
+                border-radius: 12px;
                 color: {theme.text};
-                padding: 10px 12px;
+                padding: 0 16px;
                 selection-background-color: {theme.hover_bg};
-                font-size: 10px;
+                font-size: 12px;
             }}
             QLineEdit#passwordEdit:focus {{
-                border: 1px solid {rgba(theme.primary, 0.24)};
+                border: 2px solid {theme.primary};
+                padding: -2px 14px;
             }}
             QPushButton#iconButton {{
                 background: {rgba(theme.surface_container_high, 0.90)};
-                border: 1px solid {rgba(theme.outline, 0.16)};
-                border-radius: 18px;
+                border: none;
+                border-radius: 20px;
                 color: {theme.icon};
-                min-width: 36px;
-                max-width: 36px;
-                min-height: 36px;
-                max-height: 36px;
+                min-width: 40px;
+                max-width: 40px;
+                min-height: 40px;
+                max-height: 40px;
                 font-family: "{self.material_font}";
             }}
             QPushButton#iconButton:hover {{
@@ -769,12 +810,12 @@ class WifiControlPopup(QWidget):
             QPushButton#primaryButton {{
                 background: {theme.primary};
                 border: none;
-                border-radius: 999px;
+                border-radius: 14px;
                 color: {theme.active_text};
-                font-size: 11px;
+                font-size: 12px;
                 font-weight: 600;
                 letter-spacing: 0.2px;
-                padding: 0 16px;
+                padding: 0 20px;
             }}
             QPushButton#primaryButton:hover {{
                 background: {theme.primary_container};
@@ -786,8 +827,8 @@ class WifiControlPopup(QWidget):
             }}
             QPushButton#secondaryButton {{
                 background: {rgba(theme.surface_container_high, 0.86)};
-                border: 1px solid {rgba(theme.outline, 0.16)};
-                border-radius: 999px;
+                border: none;
+                border-radius: 14px;
                 color: {theme.text};
                 font-size: 11px;
                 font-weight: 600;
@@ -902,8 +943,8 @@ class WifiControlPopup(QWidget):
         painter = QPainter(self)
         painter.setRenderHint(QPainter.RenderHint.Antialiasing, True)
         painter.setRenderHint(QPainter.RenderHint.TextAntialiasing, True)
-        rect = self.rect().adjusted(1, 1, -1, -1)
-        painter.setPen(QPen(QColor(rgba(self.theme.outline, 0.22)), 1))
+        rect = self.rect().adjusted(0, 0, 0, 0)
+        painter.setPen(Qt.GlobalColor.transparent)
         painter.setBrush(QColor(rgba(self.theme.surface_container, 0.96)))
         painter.drawRoundedRect(rect, 26, 26)
 
