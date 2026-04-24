@@ -59,6 +59,11 @@ MATERIAL_ICONS = {
     "wifi": "\ue63e",
     "wifi_find": "\uee67",
     "wifi_off": "\ue648",
+    "wifi_1_bar": "\ue1d9",
+    "wifi_2_bar": "\ue1d8",
+    "wifi_3_bar": "\ue1d7",
+    "wifi_4_bar": "\ue1d6",
+    "signal_wifi_statusbar": "\ue1da",
 }
 
 
@@ -119,16 +124,10 @@ def material_icon(name: str) -> str:
     return MATERIAL_ICONS.get(name, "?")
 
 
-def signal_icon(signal: int) -> str:
-    if signal >= 80:
-        return "signal_wifi_4_bar"
-    if signal >= 60:
-        return "signal_wifi_3_bar"
-    if signal >= 35:
-        return "signal_wifi_2_bar"
-    if signal > 0:
-        return "signal_wifi_1_bar"
-    return "signal_wifi_0_bar"
+def signal_icon(signal: int | None) -> str:
+    if signal is None or signal <= 0:
+        return "wifi_off"
+    return "wifi"
 
 
 @dataclass
@@ -756,7 +755,7 @@ class WifiControlPopup(QWidget):
             QPushButton#iconButton {{
                 background: {rgba(theme.surface_container_high, 0.90)};
                 border: 1px solid {rgba(theme.outline, 0.16)};
-                border-radius: 999px;
+                border-radius: 18px;
                 color: {theme.icon};
                 min-width: 36px;
                 max-width: 36px;
@@ -817,18 +816,19 @@ class WifiControlPopup(QWidget):
                 color: {theme.inactive};
             }}
             QPushButton#dangerButton {{
-                background: rgba(255, 180, 171, 0.16);
-                border: 1px solid rgba(255, 180, 171, 0.30);
-                border-radius: 999px;
-                color: #FFB4AB;
+                background: #E53935;
+                border: none;
+                border-radius: 18px;
+                color: #FFFFFF;
                 font-size: 11px;
                 font-weight: 600;
                 padding: 0 14px;
             }}
             QPushButton#dangerButton:hover {{
-                background: {theme.hover_bg};
+                background: #D32F2F;
             }}
             QPushButton#dangerButton:disabled {{
+                background: {theme.app_running_bg};
                 color: {theme.inactive};
             }}
             QScrollArea#networkScroll {{
@@ -841,14 +841,18 @@ class WifiControlPopup(QWidget):
                 background: transparent;
                 border-radius: 18px;
             }}
-            QScrollBar:vertical {{
+            QScrollArea#networkScroll QScrollBar:vertical {{
+                width: 10px;
                 background: transparent;
-                width: 8px;
-                margin: 10px 0;
+                margin: 8px 0 8px 0;
             }}
-            QScrollBar::handle:vertical {{
-                background: {rgba(theme.primary, 0.30)};
-                border-radius: 4px;
+            QScrollArea#networkScroll QScrollBar::handle:vertical {{
+                background: {theme.app_running_border};
+                border-radius: 5px;
+                min-height: 42px;
+            }}
+            QScrollArea#networkScroll QScrollBar::add-line:vertical, QScrollArea#networkScroll QScrollBar::sub-line:vertical {{
+                height: 0px;
             }}
             """
         )
