@@ -927,7 +927,8 @@ class WifiControlPopup(QWidget):
         if screen is None:
             return
         rect = screen.availableGeometry()
-        self.move(rect.x() + rect.width() - self.width() - 18, rect.y() + 52)
+        offset_y = 40
+        self.move(rect.x() + rect.width() - self.width() - 18, rect.y() + offset_y)
 
     def _animate_in(self) -> None:
         self.setWindowOpacity(0.0)
